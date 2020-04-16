@@ -1,9 +1,11 @@
 country,code,pop
+China,CHN,79932
 United States,USA,26341
 Spain,ESP,9630
 France,FRA,7657
 Germany,DEU,6933
 Italy,ITA,6557
+South Korea,KOR,3736
 Iran,IRN,3186
 United Kingdom,GBR,3028
 Turkey,TUR,2704
@@ -15,7 +17,5 @@ Brazil,BRA,1138
 Israel,ISR,1131
 Canada,CAN,1129
 Portugal,PRT,1035
-South Korea,KOR,851
 Philippines,PHL,538
 Russian Federation,RUS,501
-Australia,AUS,497

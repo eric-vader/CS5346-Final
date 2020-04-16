@@ -21,15 +21,18 @@ for r in csv_to_dicts("DATASET-1"):
     if d.month == 3:
         march_dict[d.day][r['Country']] = int(r['Confirmed'])
         confirmed_recovered_death[d.day][r['Country']] = ( int(r['Confirmed']) , int(r['Recovered']), int(r['Deaths']) )
+    if d.month == 2:
+        if d.day == 29:
+            confirmed_recovered_death[0][r['Country']] = ( int(r['Confirmed']) , int(r['Recovered']), int(r['Deaths']) )
 
 highest_increase = []
 increase_list = []
 
 q2 = []
 
-for dd in march_dict.keys():
+for dd in list(march_dict.keys()):
 
-    if dd == 1:
+    if dd == 0:
         continue
     
     highest_num = 0
@@ -38,7 +41,14 @@ for dd in march_dict.keys():
     total_recovered = 0
     total_death = 0
     for cc in march_dict[dd].keys():
-        increase = march_dict[dd][cc] - march_dict[dd-1][cc]
+
+        if cc == "Diamond Princess":
+            continue
+
+        if cc in march_dict[dd-1]:
+            increase = march_dict[dd][cc] - march_dict[dd-1][cc]
+        else:
+            increase = march_dict[dd][cc]
         increase_list.append((increase, cc, dd))
         if increase > highest_num:
             highest_num = increase
