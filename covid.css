@@ -1,0 +1,44 @@
+.bubbles {
+  stroke-width: 1px;
+  stroke: black;
+  opacity: .8
+}
+.bubbles:hover {
+  stroke: black;
+}
+html, 
+body {
+margin:0; padding:0; overflow:hidden
+}
+body {
+  display: table;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  font-family: sans-serif;
+}
+#dataviz {
+  display: table-cell;
+  vertical-align: middle;
+  left:0; 
+  right:0;
+  top:0; 
+  bottom:0;
+  margin:auto;
+  padding-left: 10%;
+  padding-right: 10%;
+  max-width:100%;
+  max-height:100%;
+  overflow:auto;
+}
+div.tooltip {	
+    position: absolute;			
+    pointer-events: none;
+    background-color: black;
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    opacity: 0;
+}

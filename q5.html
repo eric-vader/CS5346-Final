@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Q5</title>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="covid.css">
+
+</head>
+<body>
+<!-- Create a div where the graph will take place -->
+<div id="dataviz"></div>
+
+<script>
+
+// The svg
+var svg = d3.select("#dataviz")
+  .append("svg")
+  .attr("viewBox", "0 0 800 450")
+  .attr("preserveAspectRatio", "xMidYMid meet")
+  width = 800,
+  height = 450;
+
+// Map and projection
+var path = d3.geoPath();
+var projection = d3.geoMercator()
+  .scale(70)
+  .center([0,20])
+  .translate([width / 2, height / 2]);
+
+// Data and color scale
+var data = d3.map();
+var colorScale = d3.scaleThreshold()
+  .domain([1, 10, 100, 1000, 10000, 100000])
+  .range(d3.schemeReds[6]);
+
+country_lookup = {}
+
+// Load external data and boot
+d3.queue()
+  .defer(d3.json, "data/world.geojson")
+  .defer(d3.csv, "data/q5.csv", function(d) {country_lookup[d.code]=d.country; data.set(d.code, +d.pop); })
+  .await(ready);
+
+var tooltip = d3.select("#dataviz")
+  .append("div")
+  .attr("class", "tooltip")
+var showTooltip = function(d) {
+  if(d.total > 0) {
+    tooltip
+      .style("opacity", 1)
+      .html(country_lookup[d.id] +": "+ d.total)
+  }
+}
+var moveTooltip = function(d) {
+  tooltip
+    .style("left", (d3.event.pageX+30) + "px")
+    .style("top", (d3.event.pageY) + "px")
+}
+var hideTooltip = function(d) {
+  tooltip
+    .style("opacity", 0)
+}
+
+function ready(error, topo) {
+
+  // Draw the map
+  svg.append("g")
+    .selectAll("path")
+    .data(topo.features)
+    .enter()
+    .append("path")
+      // draw each country
+      .attr("d", d3.geoPath()
+        .projection(projection)
+      )
+      // set the color of each country
+      .attr("fill", function (d) {
+        d.total = data.get(d.id) || 0;
+        return colorScale(d.total);
+      })
+    .on("mouseover", showTooltip )
+    .on("mousemove", moveTooltip )
+    .on("mouseleave", hideTooltip );
+
+}
+
+</script>
+</body>
+</html>

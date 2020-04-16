@@ -1,0 +1,114 @@
+country,code,pop
+China,CHN,17515.0
+Italy,ITA,8794.0
+Iran,IRN,5020.0
+South Korea,KOR,7212.0
+France,FRA,1739.0
+Spain,ESP,1628.0
+Germany,DEU,1437.0
+Japan,JPN,470.0
+Switzerland,CHE,485.0
+Norway,NOR,399.0
+Netherlands,NLD,378.0
+United Kingdom,GBR,358.0
+Sweden,SWE,354.0
+Belgium,BEL,266.0
+United States,USA,923.0
+Denmark,DNK,261.0
+Austria,AUT,178.0
+Singapore,SGP,82.0
+Malaysia,MYS,105.0
+"Hong Kong, China",HKG,52.0
+Bahrain,BHR,88.0
+Greece,GRC,89.0
+United Arab Emirates,ARE,62.0
+Iraq,IRQ,61.0
+Iceland,ISL,68.0
+Kuwait,KWT,68.0
+Egypt,EGY,57.0
+Israel,ISR,79.0
+India,IND,52.0
+Australia,AUS,83.0
+Thailand,THA,19.0
+San Marino,SMR,49.0
+Taiwan,TWN,29.0
+Czech Republic,CZE,41.0
+Lebanon,LBN,39.0
+Portugal,PRT,41.0
+Finland,FIN,39.0
+Canada,CAN,70.0
+Ireland,IRL,34.0
+Philippines,PHL,30.0
+Brazil,BRA,31.0
+Slovenia,SVN,31.0
+Vietnam,VNM,15.0
+Indonesia,IDN,25.0
+Romania,ROU,22.0
+Qatar,QAT,24.0
+Poland,POL,22.0
+Algeria,DZA,20.0
+Saudi Arabia,SAU,19.0
+Oman,OMN,9.0
+Argentina,ARG,16.0
+Pakistan,PAK,15.0
+Ecuador,ECU,15.0
+Georgia,GEO,15.0
+Croatia,HRV,14.0
+Chile,CHL,13.0
+Estonia,EST,12.0
+Azerbaijan,AZE,11.0
+Peru,PER,11.0
+Albania,ALB,10.0
+"Macau, China",MAC,0.0
+Russian Federation,RUS,7.0
+Belarus,BLR,6.0
+Costa Rica,CRI,9.0
+Hungary,HUN,9.0
+Latvia,LVA,7.0
+Mexico,MEX,3.0
+North Macedonia,MKD,7.0
+Slovakia,SVK,7.0
+South Africa,ZAF,7.0
+Maldives,MDV,6.0
+Afghanistan,AFG,5.0
+Bosnia and Herzegovina,BIH,5.0
+Dominican Republic,DOM,5.0
+French Guiana,GUF,5.0
+Luxembourg,LUX,5.0
+Malta,MLT,5.0
+New Zealand,NZL,5.0
+Serbia,SRB,5.0
+Tunisia,TUN,5.0
+Bulgaria,BGR,4.0
+Senegal,SEN,3.0
+Bangladesh,BGD,3.0
+Colombia,COL,3.0
+Cyprus,CYP,3.0
+Morocco,MAR,2.0
+Moldova,MDA,3.0
+Cambodia,KHM,1.0
+Cameroon,CMR,2.0
+Faroe Islands,FRO,2.0
+Martinique,MTQ,2.0
+Nigeria,NGA,2.0
+St. Martin,MAF,2.0
+Andorra,AND,1.0
+Armenia,ARM,1.0
+Bhutan,BTN,1.0
+Brunei,BRN,1.0
+Burkina Faso,BFA,1.0
+Bailiwick of Guernsey,GGY,1.0
+Gibraltar,GIB,0.0
+Vatican City,VAT,1.0
+Jordan,JOR,1.0
+Liechtenstein,LIE,1.0
+Lithuania,LTU,1.0
+Monaco,MCO,1.0
+Mongolia,MNG,1.0
+Nepal,NPL,0.0
+Panama,PAN,1.0
+Paraguay,PRY,1.0
+Saint Barthelemy,BLM,1.0
+Sri Lanka,LKA,0.0
+Togo,TGO,1.0
+Ukraine,UKR,1.0
