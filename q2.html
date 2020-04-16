@@ -21,7 +21,7 @@
   fill-opacity: 0.75;
 }
 .bar.left {
-  fill: rgb(55, 126, 184);
+  fill: green;
 }
 .bar.right {
   fill: rgb(228, 26, 28);
@@ -75,8 +75,8 @@ d3.csv("data/q2.csv", function(data) {
   // find the maximum data value on either side
   //  since this will be shared by both of the x-axes
   var maxValue = Math.max(
-    d3.max(data, function(d) { return percentage(+d.male); }),
-    d3.max(data, function(d) { return percentage(+d.female); })
+    d3.max(data, function(d) { return +d.male; }),
+    d3.max(data, function(d) { return +d.female; })
   );
 
   // SET UP SCALES
@@ -116,14 +116,12 @@ d3.csv("data/q2.csv", function(data) {
 
   var xAxisRight = d3.svg.axis()
     .scale(xScale)
-    .orient('bottom')
-    .tickFormat(d3.format('%'));
+    .orient('bottom').tickValues([]);
 
   var xAxisLeft = d3.svg.axis()
     // REVERSE THE X-AXIS SCALE ON THE LEFT SIDE BY REVERSING THE RANGE
     .scale(xScale.copy().range([pointA, 0]))
-    .orient('bottom')
-    .tickFormat(d3.format('%'));
+    .orient('bottom').tickValues([]);
 
   // MAKE GROUPS FOR EACH SIDE OF CHART
   // scale(-1,1) is used to reverse the left side so the bars grow left instead of right
@@ -158,15 +156,15 @@ d3.csv("data/q2.csv", function(data) {
   svg.append("text")             
     .attr("transform", "translate(" + (w/2) + " ," + (h + margin.bottom - 10) + ")")
     .style("text-anchor", "middle")
-    .text("Percentage of Infected Persons");
+    .text("Number of Persons");
   svg.append("text")             
     .attr("transform", "translate(" + margin.left + " ,0)")
     .style("text-anchor", "middle")
-    .text("Male");
+    .text("Recovered");
   svg.append("text")             
     .attr("transform", "translate(" + (w - margin.right) + " ,0)")
     .style("text-anchor", "middle")
-    .text("Female");
+    .text("Cases");
 
   var tooltip = d3.select("#dataviz")
     .append("div")
@@ -174,12 +172,12 @@ d3.csv("data/q2.csv", function(data) {
   var showTooltipMale = function(d) {
     tooltip
       .style("opacity", 1)
-      .html("Ages " + d.group + ": " + d.male + " Infected, "+ d.male_deaths + " Deaths")
+      .html("Day " + d.group + ": " + d.male + " Recovered, "+ d.female + " Infected, "+ d.female_deaths + " Deaths")
   }
   var showTooltipFemale = function(d) {
     tooltip
       .style("opacity", 1)
-      .html("Ages " + d.group + ": " + d.female + " Infected, "+ d.female_deaths + " Deaths")
+      .html("Day " + d.group + ": " + d.male + " Recovered, "+ d.female + " Infected, "+ d.female_deaths + " Deaths")
   }
   var moveTooltip = function(d) {
     tooltip
@@ -198,32 +196,20 @@ d3.csv("data/q2.csv", function(data) {
       .attr('class', 'bar left')
       .attr('x', 0)
       .attr('y', function(d) { return yScale(d.group); })
-      .attr('width', function(d) { return xScale(percentage(d.male)); })
+      .attr('width', function(d) { return xScale(d.male); })
       .attr('height', yScale.rangeBand())
       .on("mouseover", showTooltipMale )
       .on("mousemove", moveTooltip )
       .on("mouseleave", hideTooltip );
 
   // DRAW BARS
-  leftBarGroup.selectAll('.bar.death')
-    .data(data)
-    .enter().append('rect')
-      .attr('class', 'bar death')
-      .attr('x', 0)
-      .attr('y', function(d) { return yScale(d.group); })
-      .attr('width', function(d) { return xScale(percentage(d.male_deaths)); })
-      .attr('height', yScale.rangeBand())
-      .on("mouseover", showTooltipMale )
-      .on("mousemove", moveTooltip )
-      .on("mouseleave", hideTooltip );
-
   rightBarGroup.selectAll('.bar.right')
     .data(data)
     .enter().append('rect')
       .attr('class', 'bar right')
       .attr('x', 0)
       .attr('y', function(d) { return yScale(d.group); })
-      .attr('width', function(d) { return xScale(percentage(d.female)); })
+      .attr('width', function(d) { return xScale(d.female); })
       .attr('height', yScale.rangeBand())
       .on("mouseover", showTooltipFemale )
       .on("mousemove", moveTooltip )
@@ -235,7 +221,7 @@ d3.csv("data/q2.csv", function(data) {
       .attr('class', 'bar death')
       .attr('x', 0)
       .attr('y', function(d) { return yScale(d.group); })
-      .attr('width', function(d) { return xScale(percentage(d.female_deaths)); })
+      .attr('width', function(d) { return xScale(d.female_deaths); })
       .attr('height', yScale.rangeBand())
       .on("mouseover", showTooltipFemale )
       .on("mousemove", moveTooltip )

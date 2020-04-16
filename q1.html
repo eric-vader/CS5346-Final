@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <title>Q1</title>
-<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+
+<script src="https://d3js.org/d3.v4.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="cs5346.css">
 
@@ -12,203 +14,81 @@
 <body>
 <!-- Create a div where the graph will take place -->
 <div id="dataviz"></div>
+
 <script>
 
-// set the dimensions and margins of the graph
-var margin = {top: 10, right: 150, bottom: 50, left: 50},
-    width = 800 - margin.left - margin.right,
-    height = 450 - margin.top - margin.bottom;
-
-var element = d3.select('#dataviz').node();
-viewbox_min = Math.min(element.getBoundingClientRect().width, element.getBoundingClientRect().height);
-
-// append the svg object to the body of the page
+// The svg
 var svg = d3.select("#dataviz")
   .append("svg")
-    .attr("viewBox", "0 0 800 450")
-    .attr("preserveAspectRatio", "xMidYMid meet")
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
+  .attr("viewBox", "0 0 800 450")
+  .attr("preserveAspectRatio", "xMidYMid meet")
+  width = 800,
+  height = 450;
 
-//Read the data
-d3.csv("data/q1.csv", function(data) {
+// Map and projection
+var path = d3.geoPath();
+var projection = d3.geoMercator()
+  .scale(70)
+  .center([0,20])
+  .translate([width / 2, height / 2]);
 
-  /*
-  =========================================== AXIS ===========================================
-  */
-  // x-axis
-  var x = d3.scaleLinear()
-    .domain(d3.extent(data, function(d) { return +d.gov_eff; }))
-    .range([ 0, width ]);
-  svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).ticks(3));
-  svg.append("text")             
-    .attr("transform", "translate(" + (width/2) + " ," + (height + margin.bottom - 10) + ")")
-    .style("text-anchor", "middle")
-    .text("Government Effectiveness");
-  
-  // y-axis
-  var y = d3.scaleLinear()
-    .domain([0, 1])
-    .range([ height, 0]);
-  svg.append("g")
-    .call(d3.axisLeft(y));
-  svg.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 0 - margin.left)
-    .attr("x",0 - (height / 2))
-    .attr("dy", "1em")
-    .style("text-anchor", "middle")
-    .text("COVID-19 Mortality Rate");
+// Data and color scale
+var data = d3.map();
+var colorScale = d3.scaleThreshold()
+  .domain([1, 10, 100, 1000, 10000, 100000])
+  .range(d3.schemeReds[6]);
 
-  // z-axis
-  var z = d3.scaleSqrt()
-    .domain(d3.extent(data, function(d) { return +d.n_infected; }))
-    .range([2, 30]);
+country_lookup = {}
 
-  // continent axis
-  var allgroups = d3.set(data, function(d) { return d.continent;}).values()
-  var continent_color = d3.scaleOrdinal()
-    .domain(allgroups)
-    .range(d3.schemeSet1);
+// Load external data and boot
+d3.queue()
+  .defer(d3.json, "data/world.geojson")
+  .defer(d3.csv, "data/q1.csv", function(d) {country_lookup[d.code]=d.country; data.set(d.code, +d.pop); })
+  .await(ready);
 
-  /*
-  =========================================== TOOPTIP ===========================================
-  */ 
-  var tooltip = d3.select("#dataviz")
-    .append("div")
-    .attr("class", "tooltip")
-  var showTooltip = function(d) {
+var tooltip = d3.select("#dataviz")
+  .append("div")
+  .attr("class", "tooltip")
+var showTooltip = function(d) {
+  if(d.total > 0) {
     tooltip
       .style("opacity", 1)
-      .html(d.country)
+      .html(country_lookup[d.id] +": "+ d.total)
   }
-  var moveTooltip = function(d) {
-    tooltip
-      .style("left", (d3.event.pageX+30) + "px")
-      .style("top", (d3.event.pageY) + "px")
-  }
-  var hideTooltip = function(d) {
-    tooltip
-      .style("opacity", 0)
-  }
+}
+var moveTooltip = function(d) {
+  tooltip
+    .style("left", (d3.event.pageX+30) + "px")
+    .style("top", (d3.event.pageY) + "px")
+}
+var hideTooltip = function(d) {
+  tooltip
+    .style("opacity", 0)
+}
 
-  /*
-  =========================================== HIGHLIGHT ===========================================
-  */ 
-  // Highlight only the group
-  var highlight = function(d){
-    // hide the rest
-    d3.selectAll(".bubbles").style("opacity", .05)
-    // Only the selected
-    d3.selectAll("."+d).style("opacity", 1)
-  }
+function ready(error, topo) {
 
-  // Clear the opacity
-  var noHighlight = function(d){
-    d3.selectAll(".bubbles").style("opacity", 1)
-  }
-
-  /*
-  =========================================== CIRCLES ===========================================
-  */
-  // Add dots
-  svg.append('g')
-    .selectAll("dot")
-    .data(data)
+  // Draw the map
+  svg.append("g")
+    .selectAll("path")
+    .data(topo.features)
     .enter()
-    .append("circle")
-      .attr("class", function(d) { return "bubbles " + d.continent })
-      .attr("cx", function (d) { return x(d.gov_eff); } )
-      .attr("cy", function (d) { return y(d.mortality_rate); } )
-      .attr("r", function (d) { return z(d.n_infected); } )
-      .style("fill", function (d) { return continent_color(d.continent); } )
-    // -3- Trigger the functions for hover
+    .append("path")
+      // draw each country
+      .attr("d", d3.geoPath()
+        .projection(projection)
+      )
+      // set the color of each country
+      .attr("fill", function (d) {
+        d.total = data.get(d.id) || 0;
+        return colorScale(d.total);
+      })
     .on("mouseover", showTooltip )
     .on("mousemove", moveTooltip )
-    .on("mouseleave", hideTooltip )
+    .on("mouseleave", hideTooltip );
 
-  /*
-  =========================================== LEGEND ===========================================
-  */
-  // Add legend: circles
-  var valuesToShow = [1000, 10000, 100000]
-  var xCircle = width + 70
-  var xLabel = xCircle + 40
-  var circle_offset = 90
-  svg
-    .selectAll("legend")
-    .data(valuesToShow)
-    .enter()
-    .append("circle")
-      .attr("cx", xCircle)
-      .attr("cy", function(d){ return height - circle_offset - z(d) } )
-      .attr("r", function(d){ return z(d) })
-      .style("fill", "none")
-      .attr("stroke", "black")
-  // Add legend: segments
-  svg
-    .selectAll("legend")
-    .data(valuesToShow)
-    .enter()
-    .append("line")
-      .attr('x1', function(d){ return xCircle + z(d) } )
-      .attr('x2', xLabel)
-      .attr('y1', function(d){ return height - circle_offset - z(d) } )
-      .attr('y2', function(d){ return height - circle_offset - z(d) } )
-      .attr('stroke', 'black')
-      .style('stroke-dasharray', ('2,2'))
-  // Add legend: labels
-  svg
-    .selectAll("legend")
-    .data(valuesToShow)
-    .enter()
-    .append("text")
-      .attr('x', xLabel)
-      .attr('y', function(d){ return height - circle_offset - z(d) } )
-      .text( function(d){ return d/1000 +' K' } )
-      .style("font-size", 10)
-      .attr('alignment-baseline', 'middle')
+}
 
-  // Legend title
-  svg.append("text")
-    .attr('x', xCircle)
-    .attr("y", height - circle_offset + 30)
-    .text("Number Infected")
-    .attr("text-anchor", "middle")
-
-  var geo_pos = width + 50
-  // Add one dot in the legend for each name.
-  var size = 20
-  
-  svg.selectAll("myrect")
-    .data(allgroups)
-    .enter()
-    .append("circle")
-      .attr("cx", geo_pos)
-      .attr("cy", function(d,i){ return 10 + i*(size+5)})
-      .attr("r", 7)
-      .style("fill", function(d){ return continent_color(d)})
-      .on("mouseover", highlight)
-      .on("mouseleave", noHighlight)
-
-  // Add labels beside legend dots
-  svg.selectAll("mylabels")
-    .data(allgroups)
-    .enter()
-    .append("text")
-      .attr("x", geo_pos + size*.8)
-      .attr("y", function(d,i){ return i * (size + 5) + (size/2)})
-      .style("fill", function(d){ return continent_color(d)})
-      .text(function(d){ return d})
-      .attr("text-anchor", "left")
-      .style("alignment-baseline", "middle")
-      .on("mouseover", highlight)
-      .on("mouseleave", noHighlight)
-
-  })
 </script>
 </body>
 </html>
